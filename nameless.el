@@ -35,8 +35,8 @@
 ;;   You can configure a string to use instead of `:' by setting the
 ;;   `nameless-prefix', and the name of the face used is `nameless-face'.
 ;;
-;;   While the mode is active, the `:' and `_' keys will insert the package
-;;   namespace when appropriate.
+;;   While the mode is active, the `_' key inserts the package
+;;   namespace if appropriate.
 
 ;;; Code:
 (require 'lisp-mnt)
@@ -109,6 +109,7 @@
 
 
 ;;; Minor mode
+;;;###autoload
 (define-minor-mode nameless-mode
   nil nil " :" '(("_" . nameless-insert-name))
   (if (and nameless-mode)
