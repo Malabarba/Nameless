@@ -1,0 +1,23 @@
+#+OPTIONS: toc:nil num:nil
+
+* Nameless
+Hide package namespace in your emacs-lisp code.
+
+Simply put, turn on this minor mode, and you’ll see this
+[[file:example-nameless-on.png]]\\
+instead of this
+[[file:example-nameless-off.png]]
+
+** Usage
+
+To use this package add the following configuration to your Emacs init file.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'emacs-lisp-mode-hook #'nameless-mode)
+#+END_SRC
+
+You can configure a string to use instead of ~:~ by setting the ~nameless-prefix~,
+and the name of the face used is ~nameless-face~.
+
+While the mode is active, the =:= and =_= keys will insert the package
+namespace when appropriate.
