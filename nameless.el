@@ -5,7 +5,7 @@
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; Keywords: convenience, lisp
 ;; Version: 0.1
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "24.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -64,19 +64,30 @@
                     (or display nameless-prefix))
     '(face nameless-face)))
 
+(defvar-local nameless--font-lock-keywords nil)
+
+(defun nameless--ensure ()
+  (save-excursion
+    (font-lock-fontify-region (point-min) (point-max))))
+
+(defun nameless--remove-keywords ()
+  "Remove font-lock keywords set by `nameless--add-keywords'."
+  (font-lock-remove-keywords nil nameless--font-lock-keywords)
+  (setq nameless--font-lock-keywords nil)
+  (nameless--ensure))
+
 (defun nameless--add-keywords (&rest r)
   "Add font-lock keywords displaying REGEXP as DISPLAY.
 
 \(fn regexp display [regexp display ...])"
   (setq-local font-lock-extra-managed-props
               (cons 'composition font-lock-extra-managed-props))
-  (while r
-    (font-lock-add-keywords
-     nil `((,(pop r) 0 (nameless--compose-as ,(pop r)) prepend)) t))
-  (with-no-warnings
-    (if (fboundp 'font-lock-ensure)
-        (font-lock-ensure)
-      (font-lock-fontify-buffer))))
+  (let ((kws nil))
+    (while r
+      (push `(,(pop r) 0 (nameless--compose-as ,(pop r)) prepend) kws))
+    (setq nameless--font-lock-keywords kws)
+    (font-lock-add-keywords nil kws t))
+  (nameless--ensure))
 
 
 ;;; Name and regexp
@@ -112,7 +123,7 @@
 ;;;###autoload
 (define-minor-mode nameless-mode
   nil nil " :" '(("_" . nameless-insert-name))
-  (if (and nameless-mode)
+  (if nameless-mode
       (if (or nameless-current-name-regexp
               nameless-current-name
               (ignore-errors (string-match "\\.el\\'" (lm-get-package-name))))
@@ -122,7 +133,8 @@
                 (setq nameless-current-name (replace-regexp-in-string "\\.[^.]*\\'" "" (lm-get-package-name))))
               (setq nameless-current-name-regexp (nameless--name-regexp nameless-current-name)))
             (nameless--add-keywords nameless-current-name-regexp))
-        (nameless-mode -1))))
+        (nameless-mode -1))
+    (nameless--remove-keywords)))
 ;; (font-lock-remove-keywords)
 
 (provide 'nameless)
