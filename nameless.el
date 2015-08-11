@@ -4,7 +4,7 @@
 
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; Keywords: convenience, lisp
-;; Version: 0.1
+;; Version: 0.2
 ;; Package-Requires: ((emacs "24.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -59,9 +59,9 @@
 (defun nameless--compose-as (display)
   "Compose the matched region and return a face spec."
   (when nameless-mode
-    (compose-region (match-beginning 0)
-                    (match-end 0)
-                    (or display nameless-prefix))
+    (compose-region (match-beginning 1)
+                    (match-end 1)
+                    (concat display nameless-prefix))
     '(face nameless-face)))
 
 (defvar-local nameless--font-lock-keywords nil)
@@ -84,7 +84,7 @@
               (cons 'composition font-lock-extra-managed-props))
   (let ((kws nil))
     (while r
-      (push `(,(pop r) 0 (nameless--compose-as ,(pop r)) prepend) kws))
+      (push `(,(pop r) 1 (nameless--compose-as ,(pop r)) prepend) kws))
     (setq nameless--font-lock-keywords kws)
     (font-lock-add-keywords nil kws t))
   (nameless--ensure))
@@ -116,7 +116,7 @@
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
-  (concat "\\<" (regexp-quote name) "-"))
+  (concat "\\<\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
 
 
 ;;; Minor mode
