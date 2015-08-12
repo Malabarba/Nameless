@@ -45,12 +45,12 @@
   "Customization group for nameless."
   :group 'emacs)
 
-(defcustom nameless-prefix ":"
+(defcustom nameless-prefix "/"
   "Prefix displayed instead of package namespace."
   :type 'string)
 
 (defface nameless-face
-  '((t :inherit font-lock-keyword-face))
+  '((t :inherit font-lock-type-face))
   "Face used on `nameless-prefix'")
 
 
