@@ -99,14 +99,17 @@
   (save-excursion
     (ignore-errors
       (backward-up-list)
-      (forward-sexp -2)
-      (looking-at-p "def\\(un\\|macro\\)\\_>"))))
+      (or (progn (forward-sexp -1)
+                 (looking-at-p "[a-z-]lambda\\_>"))
+          (progn (forward-sexp -1)
+                 (looking-at-p "\\(cl-\\)?def\\(un\\|macro\\|inline\\)\\*?\\_>"))))))
 
 (defun nameless-insert-name (&optional self-insert)
   "Insert the name of current package, with a hyphen."
   (interactive "P")
   (if (or self-insert
           (not nameless-current-name)
+          (eq (char-before) ?\\)
           (nameless--in-arglist-p)
           (string-match (rx (or (syntax symbol)
                                 (syntax word)))
@@ -116,7 +119,7 @@
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
-  (concat "\\<\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
+  (concat "\\_<\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
 
 
 ;;; Minor mode
@@ -134,6 +137,8 @@
               (setq nameless-current-name-regexp (nameless--name-regexp nameless-current-name)))
             (nameless--add-keywords nameless-current-name-regexp))
         (nameless-mode -1))
+    (setq nameless-current-name nil)
+    (setq nameless-current-name-regexp nil)
     (nameless--remove-keywords)))
 ;; (font-lock-remove-keywords)
 
