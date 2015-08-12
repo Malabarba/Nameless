@@ -49,6 +49,27 @@
   "Prefix displayed instead of package namespace."
   :type 'string)
 
+(defcustom nameless-global-aliases nil
+  "Alist from aliases to namespaces.
+This alist is used everywhere.  It is designed for namespaces you
+use commonly.  To apply aliases specific to a file, set the
+`nameless-aliases' variable with `add-file-local-variable'.
+
+Each element of this list should have the form (ALIAS . NAMESPACE),
+both strings.  For example, if you set this variable to
+          ((\"fl\" . \"font-lock\"))
+then expressions like `(font-lock-add-keywords nil kwds)' will
+displayed as `(fl/add-keywords nil kwds)' instead.
+
+Furthermore typing `fl' followed by `\\[nameless-insert-name]' will
+automatically insert `font-lock-'."
+  :type '(alist string string))
+
+(defvar nameless-aliases nil
+  "Alist from namespaces to aliases.
+Samse syntax as `nameless-global-aliases', but designed to be
+used as a file-local variable.")
+
 (defface nameless-face
   '((t :inherit font-lock-type-face))
   "Face used on `nameless-prefix'")
@@ -67,6 +88,10 @@ for it to take effect."
 
 
 ;;; Font-locking
+(defun nameless--make-composition (s)
+  "Return a list that composes S if passed to `compose-region'."
+  (cdr (apply #'append (mapcar (lambda (x) (list '(cr . cl) x)) s))))
+
 (defvar nameless-mode)
 (defun nameless--compose-as (display)
   "Compose the matched region and return a face spec."
@@ -78,7 +103,7 @@ for it to take effect."
       (when compose
         (compose-region (match-beginning 1)
                         (match-end 1)
-                        dis))
+                        (nameless--make-composition dis)))
       `(face nameless-face ,@(unless compose (list 'display dis))))))
 
 (defvar-local nameless--font-lock-keywords nil)
@@ -96,19 +121,16 @@ for it to take effect."
 (defun nameless--add-keywords (&rest r)
   "Add font-lock keywords displaying REGEXP as DISPLAY.
 
-\(fn regexp display [regexp display ...])"
+\(fn (regexp . display) [(regexp . display) ...])"
   (setq-local font-lock-extra-managed-props
-              (cons 'composition font-lock-extra-managed-props))
-  (let ((kws nil))
-    (while r
-      (push `(,(pop r) 1 (nameless--compose-as ,(pop r)) prepend) kws))
+              `(composition display ,@font-lock-extra-managed-props))
+  (let ((kws (mapcar (lambda (x) `(,(nameless--name-regexp (cdr x)) 1 (nameless--compose-as ,(car x)) prepend)) r)))
     (setq nameless--font-lock-keywords kws)
     (font-lock-add-keywords nil kws t))
   (nameless--ensure))
 
 
 ;;; Name and regexp
-(defvar-local nameless-current-name-regexp nil)
 (defvar-local nameless-current-name nil)
 
 (defun nameless--in-arglist-p ()
@@ -124,19 +146,33 @@ for it to take effect."
 (defun nameless-insert-name (&optional self-insert)
   "Insert the name of current package, with a hyphen."
   (interactive "P")
-  (if (or self-insert
-          (not nameless-current-name)
-          (eq (char-before) ?\\)
-          (nameless--in-arglist-p)
-          (string-match (rx (or (syntax symbol)
-                                (syntax word)))
-                        (string (char-before))))
-      (call-interactively #'self-insert-command)
-    (insert nameless-current-name "-")))
+  (cond
+   ((or self-insert
+        (not nameless-current-name)
+        (eq (char-before) ?\\)
+        (nameless--in-arglist-p))
+    (call-interactively #'self-insert-command))
+   ((string-match (rx (or (syntax symbol)
+                          (syntax word)))
+                  (string (char-before)))
+    (let* ((r (point))
+           (l (save-excursion
+                (forward-sexp -1)
+                (skip-chars-forward "^[:alnum:]")
+                (point)))
+           (alias (buffer-substring l r))
+           (full-name (when alias
+                        (cdr (or (assoc alias nameless-global-aliases)
+                                 (assoc alias nameless-aliases))))))
+      (if full-name
+          (progn (delete-region l r)
+                 (insert full-name "-"))
+        (call-interactively #'self-insert-command))))
+   (t (insert nameless-current-name "-"))))
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
-  (concat "\\_<\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
+  (concat "\\_<@?\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
 
 
 ;;; Minor mode
@@ -144,20 +180,18 @@ for it to take effect."
 (define-minor-mode nameless-mode
   nil nil " :" '(("_" . nameless-insert-name))
   (if nameless-mode
-      (if (or nameless-current-name-regexp
-              nameless-current-name
+      (if (or nameless-current-name
               (ignore-errors (string-match "\\.el\\'" (lm-get-package-name))))
           (progn
-            (unless nameless-current-name-regexp
-              (unless nameless-current-name
-                (setq nameless-current-name (replace-regexp-in-string "\\.[^.]*\\'" "" (lm-get-package-name))))
-              (setq nameless-current-name-regexp (nameless--name-regexp nameless-current-name)))
-            (nameless--add-keywords nameless-current-name-regexp))
+            (unless nameless-current-name
+              (setq nameless-current-name (replace-regexp-in-string "\\.[^.]*\\'" "" (lm-get-package-name))))
+            (apply #'nameless--add-keywords
+                   `((nil . ,nameless-current-name)
+                     ,@nameless-global-aliases
+                     ,@nameless-aliases)))
         (nameless-mode -1))
     (setq nameless-current-name nil)
-    (setq nameless-current-name-regexp nil)
     (nameless--remove-keywords)))
-;; (font-lock-remove-keywords)
 
 (provide 'nameless)
 ;;; nameless.el ends here
