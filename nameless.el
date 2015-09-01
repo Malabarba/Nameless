@@ -143,32 +143,48 @@ for it to take effect."
           (progn (forward-sexp -1)
                  (looking-at-p "\\(cl-\\)?def\\(un\\|macro\\|inline\\)\\*?\\_>"))))))
 
-(defun nameless-insert-name (&optional self-insert)
+(defun nameless-insert-name (&optional noerror)
+  "Insert `nameless-current-name' or the alias at point.
+If point is immediately after an alias configured in
+`nameless-aliases' or `nameless-global-aliases', replace it with
+the full name for that alias.
+Otherwise, insert `nameless-current-name'.
+
+If NOERROR is nil, signal an error if the alias at point is not
+configured, or if `nameless-current-name' is nil."
+  (interactive)
+  (if (string-match (rx (or (syntax symbol)
+                            (syntax word)))
+                    (string (char-before)))
+      (let* ((r (point))
+             (l (save-excursion
+                  (forward-sexp -1)
+                  (skip-chars-forward "^[:alnum:]")
+                  (point)))
+             (alias (buffer-substring l r))
+             (full-name (when alias
+                          (cdr (or (assoc alias nameless-aliases)
+                                   (assoc alias nameless-global-aliases))))))
+        (if full-name
+            (progn (delete-region l r)
+                   (insert full-name "-"))
+          (unless noerror
+            (user-error "No name for alias `%s', see `nameless-aliases'" alias))))
+    (if nameless-current-name
+        (insert nameless-current-name "-")
+      (unless noerror
+        (user-error "No name for current buffer, see `nameless-current-name'")))))
+
+(defun nameless-insert-name-or-self-insert (&optional self-insert)
   "Insert the name of current package, with a hyphen."
   (interactive "P")
-  (cond
-   ((or self-insert
-        (not nameless-current-name)
-        (eq (char-before) ?\\)
-        (nameless--in-arglist-p))
-    (call-interactively #'self-insert-command))
-   ((string-match (rx (or (syntax symbol)
-                          (syntax word)))
-                  (string (char-before)))
-    (let* ((r (point))
-           (l (save-excursion
-                (forward-sexp -1)
-                (skip-chars-forward "^[:alnum:]")
-                (point)))
-           (alias (buffer-substring l r))
-           (full-name (when alias
-                        (cdr (or (assoc alias nameless-aliases)
-                                 (assoc alias nameless-global-aliases))))))
-      (if full-name
-          (progn (delete-region l r)
-                 (insert full-name "-"))
+  (if (or self-insert
+          (not nameless-current-name)
+          (eq (char-before) ?\\)
+          (nameless--in-arglist-p))
+      (call-interactively #'self-insert-command)
+    (or (nameless-insert-name 'noerror)
         (call-interactively #'self-insert-command))))
-   (t (insert nameless-current-name "-"))))
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
@@ -178,7 +194,7 @@ for it to take effect."
 ;;; Minor mode
 ;;;###autoload
 (define-minor-mode nameless-mode
-  nil nil " :" '(("_" . nameless-insert-name))
+  nil nil " :" '(("_" . nameless-insert-name-or-self-insert))
   (if nameless-mode
       (if (or nameless-current-name
               (ignore-errors (string-match "\\.el\\'" (lm-get-package-name))))
