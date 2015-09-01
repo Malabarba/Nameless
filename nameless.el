@@ -45,11 +45,11 @@
   "Customization group for nameless."
   :group 'emacs)
 
-(defcustom nameless-prefix "/"
+(defcustom nameless-prefix ":"
   "Prefix displayed instead of package namespace."
   :type 'string)
 
-(defcustom nameless-global-aliases nil
+(defcustom nameless-global-aliases '(("fl" . "font-lock"))
   "Alist from aliases to namespaces.
 This alist is used everywhere.  It is designed for namespaces you
 use commonly.  To apply aliases specific to a file, set the
@@ -162,8 +162,8 @@ for it to take effect."
                 (point)))
            (alias (buffer-substring l r))
            (full-name (when alias
-                        (cdr (or (assoc alias nameless-global-aliases)
-                                 (assoc alias nameless-aliases))))))
+                        (cdr (or (assoc alias nameless-aliases)
+                                 (assoc alias nameless-global-aliases))))))
       (if full-name
           (progn (delete-region l r)
                  (insert full-name "-"))
