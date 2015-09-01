@@ -23,3 +23,14 @@ to an empty string.
 
 While the mode is active, the =_= key inserts the package namespace if
 appropriate.
+
+* Configuration
+
+Nameless can also be used to “import” other packages as aliases. For
+instance, in the default behaviour, functions in the ~font-lock~
+package (e.g., ~font-lock-add-keywords~) will be displayed with the
+~fl:~ prefix (e.g., ~fl:add-keywords~).
+
+You can configure your own aliases globally with
+~nameless-global-aliases~, and on a file-local basis with
+~nameless-aliases~.
