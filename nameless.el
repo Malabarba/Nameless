@@ -74,11 +74,11 @@ used as a file-local variable.")
   '((t :inherit font-lock-type-face))
   "Face used on `nameless-prefix'")
 
-(defcustom nameless-affect-indentation 'outside-strings
-  "If non-nil, code is indented according to what you see.
-If nil, code is indented according to its actual content.
+(defcustom nameless-affect-indentation-and-filling 'outside-strings
+  "If non-nil, code is indented and filled according to what you see.
+If nil, code is indented and filled according to its actual content.
 If the value is `outside-strings', behave like nil inside strings
-and non-nil otherwise.
+and behave like t otherwise.
 
 After changing this variable, you must reenable `nameless-mode'
 for it to take effect."
@@ -96,8 +96,8 @@ for it to take effect."
 (defun nameless--compose-as (display)
   "Compose the matched region and return a face spec."
   (when nameless-mode
-    (let ((compose (and nameless-affect-indentation
-                        (or (not (eq nameless-affect-indentation 'outside-strings))
+    (let ((compose (and nameless-affect-indentation-and-filling
+                        (or (not (eq nameless-affect-indentation-and-filling 'outside-strings))
                             (not (nth 3 (syntax-ppss))))))
           (dis (concat display nameless-prefix)))
       (when compose
