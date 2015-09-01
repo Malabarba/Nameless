@@ -90,7 +90,7 @@ for it to take effect."
 ;;; Font-locking
 (defun nameless--make-composition (s)
   "Return a list that composes S if passed to `compose-region'."
-  (cdr (apply #'append (mapcar (lambda (x) (list '(cr . cl) x)) s))))
+  (cdr (apply #'append (mapcar (lambda (x) (list '(Br . Bl) x)) s))))
 
 (defvar nameless-mode)
 (defun nameless--compose-as (display)
