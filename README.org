@@ -1,7 +1,7 @@
 #+OPTIONS: toc:nil num:nil
 
-* Nameless
-Hide package namespace in your emacs-lisp code.
+* Nameless --- /less is more/
+*Hide package namespaces in your emacs-lisp code.*
 
 Simply put, turn on this minor mode, and you’ll see this
 [[file:example-nameless-on.png]]\\
