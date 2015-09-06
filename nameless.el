@@ -4,8 +4,8 @@
 
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; Keywords: convenience, lisp
-;; Version: 0.2
-;; Package-Requires: ((emacs "24.2"))
+;; Version: 0.3
+;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -96,9 +96,10 @@ for it to take effect."
 (defun nameless--compose-as (display)
   "Compose the matched region and return a face spec."
   (when nameless-mode
-    (let ((compose (and nameless-affect-indentation-and-filling
-                        (or (not (eq nameless-affect-indentation-and-filling 'outside-strings))
-                            (not (nth 3 (syntax-ppss))))))
+    (let ((compose (save-match-data
+                     (and nameless-affect-indentation-and-filling
+                         (or (not (eq nameless-affect-indentation-and-filling 'outside-strings))
+                             (not (nth 3 (syntax-ppss)))))))
           (dis (concat display nameless-prefix)))
       (when compose
         (compose-region (match-beginning 1)
@@ -191,6 +192,13 @@ configured, or if `nameless-current-name' is nil."
   "Return a regexp of the current name."
   (concat "\\_<@?\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
 
+(defun nameless--filter-string (s)
+  "Remove from string S any disply or composition properties.
+Return S."
+  (let ((length (length s)))
+    (remove-text-properties 0 length '(composition nil display nil) s)
+    s))
+
 
 ;;; Minor mode
 ;;;###autoload
@@ -202,11 +210,15 @@ configured, or if `nameless-current-name' is nil."
           (progn
             (unless nameless-current-name
               (setq nameless-current-name (replace-regexp-in-string "\\.[^.]*\\'" "" (lm-get-package-name))))
+            (add-function :filter-return (local 'filter-buffer-substring-function)
+                          #'nameless--filter-string)
             (apply #'nameless--add-keywords
                    `((nil . ,nameless-current-name)
                      ,@nameless-global-aliases
                      ,@nameless-aliases)))
         (nameless-mode -1))
+    (remove-function (local 'filter-buffer-substring-function)
+                     #'nameless--filter-string)
     (setq nameless-current-name nil)
     (nameless--remove-keywords)))
 
