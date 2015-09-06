@@ -171,7 +171,8 @@ configured, or if `nameless-current-name' is nil."
           (unless noerror
             (user-error "No name for alias `%s', see `nameless-aliases'" alias))))
     (if nameless-current-name
-        (insert nameless-current-name "-")
+        (progn (insert nameless-current-name "-")
+               t)
       (unless noerror
         (user-error "No name for current buffer, see `nameless-current-name'")))))
 
