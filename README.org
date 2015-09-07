@@ -3,10 +3,11 @@
 * Nameless --- /less is more/
 *Hide package namespaces in your emacs-lisp code.*
 
-Simply put, turn on this minor mode, and you’ll see this
-[[file:example-nameless-on.png]]\\
-instead of this
-[[file:example-nameless-off.png]]
+Simply put, turn on this minor mode, and the namespace prefix of the
+package you’re editing will be hidden by a ~:~. Here’s a comparison.
+The image to the *left* is what you normally see. The image to
+the *right* has ~nameless-mode~ turned on.\\
+ [[file:example-nameless.png]]
 
 ** Usage
 
