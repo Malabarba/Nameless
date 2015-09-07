@@ -4,7 +4,7 @@
 
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; Keywords: convenience, lisp
-;; Version: 0.3
+;; Version: 0.3.1
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -66,9 +66,12 @@ automatically insert `font-lock-'."
   :type '(alist string string))
 
 (defvar nameless-aliases nil
-  "Alist from namespaces to aliases.
-Samse syntax as `nameless-global-aliases', but designed to be
-used as a file-local variable.")
+  "Alist from aliases to namespaces.
+This variable takes the same syntax and has the same effect as
+`nameless-global-aliases'.  Aliases set here take priority over
+those in `nameless-global-aliases'.
+This variable is designed to be used as a file-local or dir-local
+variable.")
 
 (defface nameless-face
   '((t :inherit font-lock-type-face))
