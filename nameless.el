@@ -98,11 +98,12 @@ for it to take effect."
 (defvar nameless-mode)
 (defun nameless--compose-as (display)
   "Compose the matched region and return a face spec."
-  (when nameless-mode
+  (when (and nameless-mode
+             (not (get-text-property (match-beginning 0) 'composition)))
     (let ((compose (save-match-data
                      (and nameless-affect-indentation-and-filling
-                         (or (not (eq nameless-affect-indentation-and-filling 'outside-strings))
-                             (not (nth 3 (syntax-ppss)))))))
+                          (or (not (eq nameless-affect-indentation-and-filling 'outside-strings))
+                              (not (nth 3 (syntax-ppss)))))))
           (dis (concat display nameless-prefix)))
       (when compose
         (compose-region (match-beginning 1)
@@ -128,7 +129,7 @@ for it to take effect."
 \(fn (regexp . display) [(regexp . display) ...])"
   (setq-local font-lock-extra-managed-props
               `(composition display ,@font-lock-extra-managed-props))
-  (let ((kws (mapcar (lambda (x) `(,(nameless--name-regexp (cdr x)) 1 (nameless--compose-as ,(car x)) prepend)) r)))
+  (let ((kws (mapcar (lambda (x) `(,(nameless--name-regexp (cdr x)) 1 (nameless--compose-as ,(car x)))) r)))
     (setq nameless--font-lock-keywords kws)
     (font-lock-add-keywords nil kws t))
   (nameless--ensure))
@@ -171,7 +172,8 @@ configured, or if `nameless-current-name' is nil."
                                    (assoc alias nameless-global-aliases))))))
         (if full-name
             (progn (delete-region l r)
-                   (insert full-name "-"))
+                   (insert full-name "-")
+                   t)
           (unless noerror
             (user-error "No name for alias `%s', see `nameless-aliases'" alias))))
     (if nameless-current-name
