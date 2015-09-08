@@ -99,7 +99,8 @@ for it to take effect."
 (defun nameless--compose-as (display)
   "Compose the matched region and return a face spec."
   (when (and nameless-mode
-             (not (get-text-property (match-beginning 0) 'composition)))
+             (not (get-text-property (match-beginning 1) 'composition))
+             (not (get-text-property (match-beginning 1) 'display)))
     (let ((compose (save-match-data
                      (and nameless-affect-indentation-and-filling
                           (or (not (eq nameless-affect-indentation-and-filling 'outside-strings))
