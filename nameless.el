@@ -194,6 +194,8 @@ configured, or if `nameless-current-name' is nil."
     (or (nameless-insert-name 'noerror)
         (call-interactively #'self-insert-command))))
 
+(put 'nameless-insert-name-or-self-insert 'delete-selection t)
+
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
   (concat "\\_<@?\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
