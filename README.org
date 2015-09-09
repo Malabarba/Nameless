@@ -14,7 +14,7 @@ the *right* has ~nameless-mode~ turned on.\\
 To use this package add the following configuration to your Emacs init file.
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'emacs-lisp-mode-hook #'nameless-mode)
+(add-hook 'emacs-lisp-mode-hook #'nameless-mode-from-hook)
 #+END_SRC
 
 You can configure a string to use instead of ~:~ by setting the
