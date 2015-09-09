@@ -68,13 +68,15 @@ You can configure your own aliases globally with ~nameless-global-aliases~.
                                 ("q" . "queue")))
 #+END_SRC
 
-You can also configure aliases per-file by setting ~nameless-aliases~ as a file-local variable.
+You can also configure aliases per-file by setting ~nameless-aliases~
+as a file-local variable.
 #+BEGIN_SRC emacs-lisp
 ;; Local Variables:
-;; nameless-aliases: (quote (("c" . "cider")))
+;; nameless-aliases: (("c" . "cider"))
 ;; End:
 #+END_SRC
-Or you can configure it for a whole project, by setting it as a dir-local variable.
+/Note that there’s no ~quote~ before ~((c~!/\\
+You can also configure it for a whole project, by setting it as a dir-local variable.
 
 ** Indentation and paragraph filling
 Hiding parts of symbols could affect the way Emacs indents your code
@@ -100,4 +102,5 @@ had in `nameless-aliases' or `nameless-global-aliases', replace
 it with the full name for that alias.
 #+END_SRC
 
-To change this behavior, configure the variable ~nameless-affect-indentation-and-filling~.
+To change this behavior, configure the variable
+~nameless-affect-indentation-and-filling~.

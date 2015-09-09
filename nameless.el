@@ -72,6 +72,15 @@ This variable takes the same syntax and has the same effect as
 those in `nameless-global-aliases'.
 This variable is designed to be used as a file-local or dir-local
 variable.")
+(put 'nameless-aliases 'safe-local-variable
+     (lambda (x) (ignore-errors
+              (let ((safe t))
+                (mapc (lambda (cell)
+                        (unless (and (stringp (car cell))
+                                     (stringp (cdr cell)))
+                          (setq safe nil)))
+                      x)
+                safe))))
 
 (defface nameless-face
   '((t :inherit font-lock-type-face))
@@ -138,6 +147,7 @@ for it to take effect."
 
 ;;; Name and regexp
 (defvar-local nameless-current-name nil)
+(put 'nameless-current-name 'safe-local-variable #'stringp)
 
 (defun nameless--in-arglist-p ()
   "Is point inside an arglist?"
@@ -229,6 +239,13 @@ Return S."
                      #'nameless--filter-string)
     (setq nameless-current-name nil)
     (nameless--remove-keywords)))
+
+;;;###autoload
+(defun nameless-mode-from-hook ()
+  "Turn on `nameless-mode'.
+Designed to be added to `emacs-lisp-mode-hook'.
+Interactively, just invoke `nameless-mode' directly."
+  (add-hook 'find-file-hook #'nameless-mode nil 'local))
 
 (provide 'nameless)
 ;;; nameless.el ends here
