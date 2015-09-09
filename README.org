@@ -22,16 +22,82 @@ You can configure a string to use instead of ~:~ by setting the
 You can even just hide the prefix completely by setting this variable
 to an empty string.
 
-While the mode is active, the =_= key inserts the package namespace if
-appropriate.
+While the mode is active, the <kbd>C-c C--</kbd> key inserts the
+package namespace if appropriate.
 
 * Configuration
 
+** Quickly typing the namespace
+~nameless-mode~ binds the <kbd>C-c C--</kbd> key to
+~nameless-insert-name~, which immediately inserts the current name for
+you, or even expands aliases to the names they point to.
+
+Let’s say you’re in a file called ~foo-bar.el~.
+#+BEGIN_SRC text
+   C-c C-- → foo-bar-
+fl C-c C-- → font-lock-
+#+END_SRC
+
+There’s also a command called ~nameless-insert-name-or-self-insert~.
+You can bind this to the <kbd>_</kbd> key and make it even faster to
+insert the name.
+** Configuring the namespace name
+Nameless guesses the package name with the ~lm-get-package-name~
+function, but sometimes this might not match the name you want to use.
+
+In these situations, simply set ~nameless-current-name~ as file-local variable.
+To do that, invoke the following command:
+#+BEGIN_SRC text
+M-x add-file-local-variable RET nameless-current-name RET "package-name"
+#+END_SRC
+You can also set the same name for all lisp files in a project by
+setting dir-local variables with ~M-x add-file-local-variable~.
+
+** Requiring other packages as aliases
 Nameless can also be used to “import” other packages as aliases. For
 instance, in the default behaviour, functions in the ~font-lock~
 package (e.g., ~font-lock-add-keywords~) will be displayed with the
 ~fl:~ prefix (e.g., ~fl:add-keywords~).
 
-You can configure your own aliases globally with
-~nameless-global-aliases~, and on a file-local basis with
-~nameless-aliases~.
+You can configure your own aliases globally with ~nameless-global-aliases~.
+#+BEGIN_SRC emacs-lisp
+(setq nameless-global-aliases '(("fl" . "font-lock")
+                                ("s" . "seq")
+                                ("me" . "macroexp")
+                                ("c" . "cider")
+                                ("q" . "queue")))
+#+END_SRC
+
+You can also configure aliases per-file by setting ~nameless-aliases~ as a file-local variable.
+#+BEGIN_SRC emacs-lisp
+;; Local Variables:
+;; nameless-aliases: (quote (("c" . "cider")))
+;; End:
+#+END_SRC
+Or you can configure it for a whole project, by setting it as a dir-local variable.
+
+** Indentation and paragraph filling
+Hiding parts of symbols could affect the way Emacs indents your code
+and fills your paragraphs. Nameless lets you decide whether you want
+that to happen or not. 
+
+The default behavior is that code is indented according to what you
+see (i.e., according to short symbols), but text inside strings is
+*not*. So text inside strings will be filled in the same way as if you
+didn’t have ~nameless-mode~. Here’s how a docstring might be filled
+with ~nameless-mode~ enabled:
+#+BEGIN_SRC text
+If point is immediately after an alias configured in the name you
+had in `:aliases' or `:global-aliases', replace
+it with the full name for that alias.
+#+END_SRC
+Altough it may look strange that the second line is so short, that’s
+the correct way. When view on a ~*Help*~ buffer, that docstring will
+look like this:
+#+BEGIN_SRC text
+If point is immediately after an alias configured in the name you
+had in `nameless-aliases' or `nameless-global-aliases', replace
+it with the full name for that alias.
+#+END_SRC
+
+To change this behavior, configure the variable ~nameless-affect-indentation-and-filling~.

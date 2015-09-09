@@ -211,7 +211,7 @@ Return S."
 ;;; Minor mode
 ;;;###autoload
 (define-minor-mode nameless-mode
-  nil nil " :" '(("_" . nameless-insert-name-or-self-insert))
+  nil nil " :" `((,(kbd "C-c C--") . nameless-insert-name))
   (if nameless-mode
       (if (or nameless-current-name
               (ignore-errors (string-match "\\.el\\'" (lm-get-package-name))))
