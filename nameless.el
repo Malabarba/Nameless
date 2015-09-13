@@ -147,9 +147,10 @@ displayed as `::internal-impl', instead of `:-internal-impl'."
   (nameless--ensure))
 
 (defun nameless--add-keywords (&rest r)
-  "Add font-lock keywords displaying REGEXP as DISPLAY.
+  "Add font-lock keywords displaying ALIAS as DISPLAY.
+ALIAS may be nil, in which case it refers to `nameless-current-name'.
 
-\(fn (regexp . display) [(regexp . display) ...])"
+\(fn (alias . display) [(alias . display) ...])"
   (setq-local font-lock-extra-managed-props
               `(composition display ,@font-lock-extra-managed-props))
   (let ((kws (mapcar (lambda (x) `(,(nameless--name-regexp (cdr x)) 1 (nameless--compose-as ,(car x)))) r)))
