@@ -160,15 +160,16 @@ displayed as `::internal-impl', instead of `:-internal-impl'."
 (defvar-local nameless-current-name nil)
 (put 'nameless-current-name 'safe-local-variable #'stringp)
 
-(defun nameless--in-arglist-p ()
-  "Is point inside an arglist?"
+(defun nameless--in-arglist-p (l)
+  "Is point L inside an arglist?"
   (save-excursion
+    (goto-char l)
     (ignore-errors
       (backward-up-list)
       (or (progn (forward-sexp -1)
                  (looking-at-p "[a-z-]lambda\\_>"))
           (progn (forward-sexp -1)
-                 (looking-at-p "\\(cl-\\)?def\\(un\\|macro\\|inline\\)\\*?\\_>"))))))
+                 (looking-at-p "\\(cl-\\)?def"))))))
 
 (defun nameless-insert-name (&optional noerror)
   "Insert `nameless-current-name' or the alias at point.
@@ -207,19 +208,22 @@ configured, or if `nameless-current-name' is nil."
 (defun nameless-insert-name-or-self-insert (&optional self-insert)
   "Insert the name of current package, with a hyphen."
   (interactive "P")
-  (if (or self-insert
-          (not nameless-current-name)
-          (eq (char-before) ?\\)
-          (nameless--in-arglist-p))
-      (call-interactively #'self-insert-command)
-    (or (nameless-insert-name 'noerror)
-        (call-interactively #'self-insert-command))))
+  (let ((l (point)))
+    (call-interactively #'self-insert-command)
+    (unless (or self-insert
+                (not nameless-current-name)
+                (eq (char-before l) ?\\)
+                (nameless--in-arglist-p l))
+      (undo-boundary)
+      (delete-region l (point))
+      (unless (nameless-insert-name 'noerror)
+        (call-interactively #'self-insert-command)))))
 
 (put 'nameless-insert-name-or-self-insert 'delete-selection t)
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
-  (concat "\\_<@?\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
+  (concat "\\_<@?\\(_" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
 
 (defun nameless--private-name-regexp (name)
   "Return a regexp of the current private name."
