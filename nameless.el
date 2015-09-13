@@ -124,9 +124,11 @@ displayed as `::internal-impl', instead of `:-internal-impl'."
       (when compose
         (if (and nameless-private-prefix
                  (equal "-" (substring (match-string 0) -1)))
-            (compose-region (match-beginning 0)
-                            (match-end 0)
-                            (nameless--make-composition (concat dis nameless-prefix)))
+            (progn
+              (setq dis (concat dis nameless-prefix))
+              (compose-region (match-beginning 0)
+                              (match-end 0)
+                              (nameless--make-composition dis)))
           (compose-region (match-beginning 1)
                           (match-end 1)
                           (nameless--make-composition dis))))
