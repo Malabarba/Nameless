@@ -4,7 +4,7 @@
 
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; Keywords: convenience, lisp
-;; Version: 0.4
+;; Version: 0.4.1
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -227,7 +227,7 @@ Return S."
               (ignore-errors (string-match "\\.el\\'" (lm-get-package-name))))
           (progn
             (unless nameless-current-name
-              (setq nameless-current-name (replace-regexp-in-string "\\.[^.]*\\'" "" (lm-get-package-name))))
+              (setq nameless-current-name (replace-regexp-in-string "\\(-mode\\)?\\.[^.]*\\'" "" (lm-get-package-name))))
             (add-function :filter-return (local 'filter-buffer-substring-function)
                           #'nameless--filter-string)
             (apply #'nameless--add-keywords
