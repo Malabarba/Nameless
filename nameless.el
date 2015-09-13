@@ -223,11 +223,7 @@ configured, or if `nameless-current-name' is nil."
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
-  (concat "\\_<@?\\(_" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
-
-(defun nameless--private-name-regexp (name)
-  "Return a regexp of the current private name."
-  (concat "\\_<@?\\(" (regexp-quote name) "--\\)\\(\\s_\\|\\sw\\)"))
+  (concat "\\_<@?\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
 
 (defun nameless--filter-string (s)
   "Remove from string S any disply or composition properties.
