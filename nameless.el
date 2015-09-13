@@ -98,6 +98,12 @@ for it to take effect."
                  (const :tag "Don't affect indentation" nil)
                  (const :tag "Only outside strings" 'outside-strings)))
 
+(defcustom nameless-private-prefix nil
+  "If non-nil, private symbols are displayed with a double prefix.
+For instance, the function `foobar--internal-impl' will be
+displayed as `::internal-impl', instead of `:-internal-impl'."
+  :type 'boolean)
+
 
 ;;; Font-locking
 (defun nameless--make-composition (s)
@@ -116,9 +122,14 @@ for it to take effect."
                               (not (nth 3 (syntax-ppss)))))))
           (dis (concat display nameless-prefix)))
       (when compose
-        (compose-region (match-beginning 1)
-                        (match-end 1)
-                        (nameless--make-composition dis)))
+        (if (and nameless-private-prefix
+                 (equal "-" (substring (match-string 0) -1)))
+            (compose-region (match-beginning 0)
+                            (match-end 0)
+                            (nameless--make-composition (concat dis nameless-prefix)))
+          (compose-region (match-beginning 1)
+                          (match-end 1)
+                          (nameless--make-composition dis))))
       `(face nameless-face ,@(unless compose (list 'display dis))))))
 
 (defvar-local nameless--font-lock-keywords nil)
@@ -209,6 +220,10 @@ configured, or if `nameless-current-name' is nil."
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
   (concat "\\_<@?\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
+
+(defun nameless--private-name-regexp (name)
+  "Return a regexp of the current private name."
+  (concat "\\_<@?\\(" (regexp-quote name) "--\\)\\(\\s_\\|\\sw\\)"))
 
 (defun nameless--filter-string (s)
   "Remove from string S any disply or composition properties.

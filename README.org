@@ -78,6 +78,17 @@ as a file-local variable.
 Note that there’s no ~quote~ before ~((c~!\\
 You can also configure it for a whole project, by setting it as a dir-local variable.
 
+** Private symbols
+
+Private symbols in elisp are written with an extra dash after the
+prefix (e.g., ~foobar--indent-impl~). With Nameless, these are usually
+displayed as ~:-indent-impl~, but you can also make them be displayed
+as ~::indent-impl~ by setting
+
+#+BEGIN_SRC emacs-lisp
+(setq nameless-private-prefix t)
+#+END_SRC
+
 ** Indentation and paragraph filling
 Hiding parts of symbols could affect the way Emacs indents your code
 and fills your paragraphs. Nameless lets you decide whether you want
