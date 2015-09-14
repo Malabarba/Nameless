@@ -96,7 +96,7 @@ After changing this variable, you must reenable `nameless-mode'
 for it to take effect."
   :type '(choice (const :tag "Always affect indentation" t)
                  (const :tag "Don't affect indentation" nil)
-                 (const :tag "Only outside strings" 'outside-strings)))
+                 (const :tag "Only outside strings" outside-strings)))
 
 (defcustom nameless-private-prefix nil
   "If non-nil, private symbols are displayed with a double prefix.
