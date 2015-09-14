@@ -120,19 +120,19 @@ displayed as `::internal-impl', instead of `:-internal-impl'."
                      (and nameless-affect-indentation-and-filling
                           (or (not (eq nameless-affect-indentation-and-filling 'outside-strings))
                               (not (nth 3 (syntax-ppss)))))))
-          (dis (concat display nameless-prefix)))
-      (when compose
-        (if (and nameless-private-prefix
-                 (equal "-" (substring (match-string 0) -1)))
-            (progn
-              (setq dis (concat dis nameless-prefix))
-              (compose-region (match-beginning 0)
-                              (match-end 0)
-                              (nameless--make-composition dis)))
-          (compose-region (match-beginning 1)
-                          (match-end 1)
-                          (nameless--make-composition dis))))
-      `(face nameless-face ,@(unless compose (list 'display dis))))))
+          (dis (concat display nameless-prefix))
+          (beg (match-beginning 1))
+          (end (match-end 1))
+          (private-prefix (and nameless-private-prefix
+                               (equal "-" (substring (match-string 0) -1)))))
+      (when private-prefix
+        (setq beg (match-beginning 0))
+        (setq end (match-end 0))
+        (setq dis (concat dis nameless-prefix)))
+      (if compose
+          (compose-region beg end (nameless--make-composition dis))
+        (add-text-properties beg end (list 'display dis)))
+      '(face nameless-face))))
 
 (defvar-local nameless--font-lock-keywords nil)
 
