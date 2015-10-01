@@ -4,7 +4,7 @@
 
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; Keywords: convenience, lisp
-;; Version: 0.5
+;; Version: 0.5.1
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -97,6 +97,7 @@ for it to take effect."
   :type '(choice (const :tag "Always affect indentation" t)
                  (const :tag "Don't affect indentation" nil)
                  (const :tag "Only outside strings" outside-strings)))
+(put 'nameless-current-name 'safe-local-variable #'symbolp)
 
 (defcustom nameless-private-prefix nil
   "If non-nil, private symbols are displayed with a double prefix.
