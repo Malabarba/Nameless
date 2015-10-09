@@ -112,6 +112,17 @@ For instance, the function `foobar--internal-impl' will be
 displayed as `::internal-impl', instead of `:-internal-impl'."
   :type 'boolean)
 
+(defcustom nameless-separator "-"
+  "Separator used between package prefix and rest of symbol.
+The separator is hidden along with the package name.  For
+instance, setting it to \"/\" means that `init/bio' will be
+displayed as `:bio' (assuming `nameless-current-name' is
+\"init\").  The default is \"-\", since this is the
+separator recommended by the Elisp manual.
+
+Value can also be nil, in which case the separator is never hidden."
+  :type '(choice string (constant nil)))
+
 
 ;;; Font-locking
 (defun nameless--make-composition (s)
@@ -132,7 +143,7 @@ displayed as `::internal-impl', instead of `:-internal-impl'."
           (beg (match-beginning 1))
           (end (match-end 1))
           (private-prefix (and nameless-private-prefix
-                               (equal "-" (substring (match-string 0) -1)))))
+                               (equal nameless-separator (substring (match-string 0) -1)))))
       (when private-prefix
         (setq beg (match-beginning 0))
         (setq end (match-end 0))
@@ -211,7 +222,7 @@ configured, or if `nameless-current-name' is nil."
           (unless noerror
             (user-error "No name for alias `%s', see `nameless-aliases'" alias))))
     (if nameless-current-name
-        (progn (insert nameless-current-name "-")
+        (progn (insert nameless-current-name nameless-separator)
                t)
       (unless noerror
         (user-error "No name for current buffer, see `nameless-current-name'")))))
@@ -234,7 +245,8 @@ configured, or if `nameless-current-name' is nil."
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
-  (concat "\\_<@?\\(" (regexp-quote name) "-\\)\\(\\s_\\|\\sw\\)"))
+  (concat "\\_<@?\\(" (regexp-quote name)
+          nameless-separator "\\)\\(\\s_\\|\\sw\\)"))
 
 (defun nameless--filter-string (s)
   "Remove from string S any disply or composition properties.
