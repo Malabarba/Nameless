@@ -82,6 +82,13 @@ variable.")
                       x)
                 safe))))
 
+(defcustom nameless-discover-current-name t
+  "If non-nil, discover package name automatically.
+If nil, `nameless-current-name' must be set explicitly, or left as nil,
+in which case only namespaces from `nameless-global-aliases' and
+`nameless-aliases' are used."
+  :type 'boolean)
+
 (defface nameless-face
   '((t :inherit font-lock-type-face))
   "Face used on `nameless-prefix'")
@@ -242,18 +249,19 @@ Return S."
 (define-minor-mode nameless-mode
   nil nil " :" `((,(kbd "C-c C--") . nameless-insert-name))
   (if nameless-mode
-      (if (or nameless-current-name
-              (ignore-errors (string-match "\\.el\\'" (lm-get-package-name))))
-          (progn
-            (unless nameless-current-name
-              (setq nameless-current-name (replace-regexp-in-string "\\(-mode\\)?\\.[^.]*\\'" "" (lm-get-package-name))))
-            (add-function :filter-return (local 'filter-buffer-substring-function)
-                          #'nameless--filter-string)
-            (apply #'nameless--add-keywords
-                   `((nil . ,nameless-current-name)
-                     ,@nameless-global-aliases
-                     ,@nameless-aliases)))
-        (nameless-mode -1))
+      (progn
+        (when (and (not nameless-current-name)
+                   nameless-discover-current-name
+                   (ignore-errors (string-match "\\.el\\'" (lm-get-package-name))))
+          (setq nameless-current-name
+                (replace-regexp-in-string "\\(-mode\\)?\\.[^.]*\\'" "" (lm-get-package-name))))
+        (add-function :filter-return (local 'filter-buffer-substring-function)
+                      #'nameless--filter-string)
+        (apply #'nameless--add-keywords
+               `(,@(when nameless-current-name
+                     `((nil . ,nameless-current-name)))
+                 ,@nameless-global-aliases
+                 ,@nameless-aliases)))
     (remove-function (local 'filter-buffer-substring-function)
                      #'nameless--filter-string)
     (setq nameless-current-name nil)
