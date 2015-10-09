@@ -53,6 +53,11 @@ M-x add-file-local-variable RET nameless-current-name RET "package-name"
 You can also set the same name for all lisp files in a project by
 setting dir-local variables with ~M-x add-file-local-variable~.
 
+If you /don’t/ want Nameless to use a namespace name at all (neither
+manual nor automatic), you can set ~nameless-discover-current-name~ to
+~nil~. This will disable this functionality, so that Nameless will
+/only/ use aliases (see next item).
+
 ** Requiring other packages as aliases
 Nameless can also be used to “import” other packages as aliases. For
 instance, in the default behaviour, functions in the ~font-lock~
@@ -89,10 +94,17 @@ as ~::indent-impl~ by setting
 (setq nameless-private-prefix t)
 #+END_SRC
 
+** Packages that don’t use ~-~ (hyphen) as a separator
+You can set ~nameless-separator~ file-locally to whatever separator
+you package uses. Most packages use hyphens, by some use ~/~, ~|~, or
+~:~.
+
+You can also set it to ~nil~ globally and the separator will never be
+hidden.
 ** Indentation and paragraph filling
 Hiding parts of symbols could affect the way Emacs indents your code
 and fills your paragraphs. Nameless lets you decide whether you want
-that to happen or not. 
+that to happen or not.
 
 The default behavior is that code is indented according to what you
 see (i.e., according to short symbols), but text inside strings is
