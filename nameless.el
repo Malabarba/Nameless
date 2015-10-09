@@ -172,7 +172,7 @@ ALIAS may be nil, in which case it refers to `nameless-current-name'.
 \(fn (alias . display) [(alias . display) ...])"
   (setq-local font-lock-extra-managed-props
               `(composition display ,@font-lock-extra-managed-props))
-  (let ((kws (mapcar (lambda (x) `(,(nameless--name-regexp (cdr x)) 1 (nameless--compose-as ,(car x)))) r)))
+  (let ((kws (mapcar (lambda (x) `(,(nameless--name-regexp (cdr x)) 1 (nameless--compose-as ,(car x)) prepend)) r)))
     (setq nameless--font-lock-keywords kws)
     (font-lock-add-keywords nil kws t))
   (nameless--ensure))
