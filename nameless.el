@@ -3,6 +3,7 @@
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
+;; URL: https://github.com/Malabarba/nameless
 ;; Keywords: convenience, lisp
 ;; Version: 0.5.1
 ;; Package-Requires: ((emacs "24.4"))
