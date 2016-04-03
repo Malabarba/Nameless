@@ -5,7 +5,7 @@
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; URL: https://github.com/Malabarba/nameless
 ;; Keywords: convenience, lisp
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -285,7 +285,6 @@ Return S."
                   nil 'local))
     (remove-function (local 'filter-buffer-substring-function)
                      #'nameless--filter-string)
-    (setq nameless-current-name nil)
     (remove-hook 'hack-local-variables-hook
                  #'nameless--after-hack-local-variables
                  'local)
