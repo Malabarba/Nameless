@@ -51,7 +51,10 @@ To do that, invoke the following command:
 M-x add-file-local-variable RET nameless-current-name RET "package-name"
 #+END_SRC
 You can also set the same name for all lisp files in a project by
-setting dir-local variables with ~M-x add-file-local-variable~.
+setting dir-local variables with:
+#+BEGIN_SRC text
+M-x add-dir-local-variable RET emacs-lisp-mode RET nameless-current-name RET "package-name"
+#+END_SRC
 
 If you /don’t/ want Nameless to use a namespace name at all (neither
 manual nor automatic), you can set ~nameless-discover-current-name~ to
