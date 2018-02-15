@@ -108,10 +108,15 @@ for it to take effect."
 (put 'nameless-current-name 'safe-local-variable #'symbolp)
 
 (defcustom nameless-private-prefix nil
-  "If non-nil, private symbols are displayed with a double prefix.
-For instance, the function `foobar--internal-impl' will be
-displayed as `::internal-impl', instead of `:-internal-impl'."
-  :type 'boolean)
+  "If non-nil, handle private symbols specially.
+
+When t, display private symbols with a double prefix. For
+instance, the function `foobar--internal-impl' will be displayed
+as `::internal-impl', instead of `:-internal-impl'.
+
+When set to a string, use this string as a prefix for private
+symbols instead of `nameless-prefix'."
+  :type '(choice boolean string))
 
 (defcustom nameless-separator "-"
   "Separator used between package prefix and rest of symbol.
@@ -148,7 +153,9 @@ Value can also be nil, in which case the separator is never hidden."
       (when private-prefix
         (setq beg (match-beginning 0))
         (setq end (match-end 0))
-        (setq dis (concat dis nameless-prefix)))
+        (setq dis (if (stringp nameless-private-prefix)
+                      (concat display nameless-private-prefix)
+                    (concat dis nameless-prefix))))
       (if compose
           (compose-region beg end (nameless--make-composition dis))
         (add-text-properties beg end (list 'display dis)))
