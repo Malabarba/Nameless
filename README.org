@@ -99,7 +99,7 @@ as ~::indent-impl~ by setting
 
 ** Packages that don’t use ~-~ (hyphen) as a separator
 You can set ~nameless-separator~ file-locally to whatever separator
-you package uses. Most packages use hyphens, by some use ~/~, ~|~, or
+you package uses. Most packages use hyphens, but some use ~/~, ~|~, or
 ~:~.
 
 You can also set it to ~nil~ globally and the separator will never be
@@ -120,7 +120,7 @@ had in `:aliases' or `:global-aliases', replace
 it with the full name for that alias.
 #+END_SRC
 Altough it may look strange that the second line is so short, that’s
-the correct way. When view on a ~*Help*~ buffer, that docstring will
+the correct way. When viewed in a ~*Help*~ buffer, that docstring will
 look like this:
 #+BEGIN_SRC text
 If point is immediately after an alias configured in the name you
