@@ -288,7 +288,8 @@ Return S."
                 (replace-regexp-in-string "\\(-mode\\)?\\(-tests?\\)?\\.[^.]*\\'" "" (lm-get-package-name))))
         (add-function :filter-return (local 'filter-buffer-substring-function)
                       #'nameless--filter-string)
-        (nameless--after-hack-local-variables)
+        (when (called-interactively-p 'any)
+          (nameless--after-hack-local-variables))
         (add-hook 'hack-local-variables-hook
                   #'nameless--after-hack-local-variables
                   nil 'local))
