@@ -165,7 +165,9 @@ Value can also be nil, in which case the separator is never hidden."
 
 (defun nameless--ensure ()
   (save-excursion
-    (font-lock-fontify-region (point-min) (point-max))))
+    (if (fboundp 'font-lock-flush)
+        (font-lock-flush)
+      (font-lock-fontify-region (point-min) (point-max)))))
 
 (defun nameless--remove-keywords ()
   "Remove font-lock keywords set by `nameless--add-keywords'."
