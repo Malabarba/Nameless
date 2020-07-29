@@ -103,7 +103,7 @@ you package uses. Most packages use hyphens, but some use ~/~, ~|~, or
 ~:~.
 
 You can also set it to ~nil~ globally and the separator will never be
-hidden.
+hidden, and will not be inserted with `-name-insert-` functions.
 ** Indentation and paragraph filling
 Hiding parts of symbols could affect the way Emacs indents your code
 and fills your paragraphs. Nameless lets you decide whether you want
