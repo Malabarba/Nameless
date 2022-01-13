@@ -129,6 +129,13 @@ separator recommended by the Elisp manual.
 Value can also be nil, in which case the separator is never hidden."
   :type '(choice string (constant nil)))
 
+(defcustom nameless-abbrev-prefix nil
+  "If non-nil, configure new abbrevs with this prefix for the current namespace and
+  <alias>prefix for aliases.
+
+See `abbrev-mode'."
+  :type '(choice boolean string))
+
 
 ;;; Font-locking
 (defun nameless--make-composition (s)
@@ -276,7 +283,19 @@ Return S."
            ,@nameless-global-aliases
            ,@nameless-aliases)))
 
-(defvar nameless--after-hack-local-variables-hook '(nameless--after-hack-local-variables)
+(defun nameless--abbrev-setup ()
+  "Setup abbrev if needed."
+  (when nameless-abbrev-prefix
+    (let ((table-name (intern (format "nameless-%s-abbrev-table" nameless-current-name))))
+      (define-abbrev-table table-name
+        `((,nameless-abbrev-prefix ,nameless-current-name)
+          ,@(mapcar
+             (lambda (alias) (list (concat (car alias) nameless-abbrev-prefix) (cdr alias)))
+             nameless-aliases)))
+      (setq local-abbrev-table (eval table-name))
+      (abbrev-mode t))))
+
+(defvar nameless--after-hack-local-variables-hook '(nameless--after-hack-local-variables nameless--abbrev-setup)
   "Hook run after loading local variables.")
 
 (defun nameless--run-after-hack-local-variables-hooks ()

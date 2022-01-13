@@ -130,3 +130,9 @@ it with the full name for that alias.
 
 To change this behavior, configure the variable
 ~nameless-affect-indentation-and-filling~.
+
+** Abbrev mode support
+Setting the variable ~nameless-abbrev-prefix~ to a string will generate ~abbrev~ for the current
+namespace and the defined aliases. For example, using ~ns~ as a prefix, typing ~ns-~ will trigger
+the expansion to the current namespace. If an alias ~fl~ has been defined for the ~font-lock~
+namespace, then typing ~flns-~ will trigger expansion to ~font-lock-~.
