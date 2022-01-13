@@ -276,6 +276,13 @@ Return S."
            ,@nameless-global-aliases
            ,@nameless-aliases)))
 
+(defvar nameless--after-hack-local-variables-hook '(nameless--after-hack-local-variables)
+  "Hook run after loading local variables.")
+
+(defun nameless--run-after-hack-local-variables-hooks ()
+  "Run after hack local variable hooks."
+  (run-hooks 'nameless--after-hack-local-variables-hook))
+
 
 ;;; Minor mode
 ;;;###autoload
@@ -290,14 +297,14 @@ Return S."
                 (replace-regexp-in-string "\\(-mode\\)?\\(-tests?\\)?\\.[^.]*\\'" "" (lm-get-package-name))))
         (add-function :filter-return (local 'filter-buffer-substring-function)
                       #'nameless--filter-string)
-        (nameless--after-hack-local-variables)
+        (nameless--run-after-hack-local-variables-hooks)
         (add-hook 'hack-local-variables-hook
-                  #'nameless--after-hack-local-variables
+                  #'nameless--run-after-hack-local-variables-hooks
                   nil 'local))
     (remove-function (local 'filter-buffer-substring-function)
                      #'nameless--filter-string)
     (remove-hook 'hack-local-variables-hook
-                 #'nameless--after-hack-local-variables
+                 #'nameless--run-after-hack-local-variables-hook
                  'local)
     (nameless--remove-keywords)))
 
