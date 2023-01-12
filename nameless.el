@@ -149,6 +149,7 @@ Value can also be nil, in which case the separator is never hidden."
           (beg (match-beginning 1))
           (end (match-end 1))
           (private-prefix (and nameless-private-prefix
+                               nameless-separator
                                (equal nameless-separator (substring (match-string 0) -1)))))
       (when private-prefix
         (setq beg (match-beginning 0))
@@ -232,11 +233,10 @@ configured, or if `nameless-current-name' is nil."
           (unless noerror
             (user-error "No name for alias `%s', see `nameless-aliases'" alias))))
     (if nameless-current-name
-        (progn (insert nameless-current-name nameless-separator)
+        (progn (insert nameless-current-name (or nameless-separator ""))
                t)
       (unless noerror
         (user-error "No name for current buffer, see `nameless-current-name'")))))
-
 (defun nameless-insert-name-or-self-insert (&optional self-insert)
   "Insert the name of current package, with a hyphen.
 If point is in an argument list, or if we're typing an escaped
@@ -252,13 +252,12 @@ character, insert the current character literally instead."
       (delete-region l (point))
       (unless (nameless-insert-name 'noerror)
         (call-interactively #'self-insert-command)))))
-
 (put 'nameless-insert-name-or-self-insert 'delete-selection t)
 
 (defun nameless--name-regexp (name)
   "Return a regexp of the current name."
   (concat "\\_<@?\\(" (regexp-quote name)
-          nameless-separator "\\)\\(\\s_\\|\\sw\\)"))
+          (or nameless-separator "") "\\)\\(\\s_\\|\\sw\\)"))
 
 (defun nameless--filter-string (s)
   "Remove from string S any disply or composition properties.
