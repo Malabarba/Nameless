@@ -44,7 +44,7 @@
 
 (defgroup nameless nil
   "Customization group for nameless."
-  :group 'emacs)
+  :group 'tools)
 
 (defcustom nameless-prefix ":"
   "Prefix displayed instead of package namespace."
